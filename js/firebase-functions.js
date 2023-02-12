@@ -7,10 +7,16 @@ const db = getFirestore(app);
 
 const q = query(collection(db, "users"), orderBy("created_at"));
 const o = query(collection(db, "observations"), orderBy("date"));
+const d = query(collection(db, "dates"), orderBy("date"));
+
 var users = document.getElementById("users");
 var observations = document.getElementById("observation");
+var dates = document.getElementById("dates");
+
 var idUser = "";
 var idObservation = "";
+var idDate = "";
+
 
 
 
@@ -125,10 +131,49 @@ const btnObservation = document.getElementById("saveNote");
 btnObservation.addEventListener("click", saveObservation);
 
 
+const saveDate = async () => {
+  const date = {
+    user: idUser,
+  };
 
+  const dateRef = document.getElementById("date");
+  console.log("valor " + dateRef);
+
+  date.date = dateRef.value;
+  const generatedId = await createDateFire(date);
+  if (generatedId != "no-created") {
+    dateRef.value = "";
+    Toastify({
+      text: "Fecha creada exitosamente!",
+      duration: 2000,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "center", // `left`, `center` or `right`
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+    }).showToast();
+  } else {
+    alert("Nota no creada ");
+  }
+clean();
+};
+
+const btnDate = document.getElementById("saveDate");
+btnDate.addEventListener("click", saveDate);
+
+
+
+
+
+ 
 
 const getObservations = async (idUser) => {
-  
+
+
+
+ 
+
   const queryObservation = query(o, where("user", "==", idUser));
   const querySnapshot = await getDocs(queryObservation);
   querySnapshot.forEach((doc) => {
@@ -300,14 +345,194 @@ const getObservations = async (idUser) => {
       
   });
 
- 
+  const btnDateGet = document.getElementById("btnDate");
+  btnDateGet.addEventListener("click", getDates(idUser));
 
 };
  
+
+const getDates = async (idUser) => {
+
+
+
+  const queryDate = query(d, where("user", "==", idUser));
+  const querySnapshot = await getDocs(queryDate);
+  querySnapshot.forEach((doc) => {
+
+    console.log(doc.id, " => ", doc.data());
+    const newDate= document.createElement("div-dates");
+    
+    var timeStamp = doc.data().date;
+    var date = new Date(timeStamp);
+    var day = "";
+    var month = "";
+
+    switch (date.getDay()) {
+      case 1:
+        
+        break;
+
+        case 1:
+
+        day = "Monday";
+        
+        break;
+
+        case 2:
+          day = "Tuesday";
+
+        break;
+
+        case 3:
+          day = "Wednesday";
+
+        break;
+
+        case 4:
+          day = "Thursday";
+
+        break;
+
+        case 5:
+          day = "Friday";
+
+        break;
+
+        case 6:
+          day = "Saturday";
+
+        
+        break;
+
+        case 7:
+          day = "Sunday";
+
+        
+        break;
+    
+      default:
+        break;
+    }
+    switch (date.getMonth()) {
+  
+
+        case 1:
+
+        month = "January";
+        
+        break;
+
+        case 2:
+          month = "February";
+
+        break;
+
+        case 3:
+          month = "March";
+
+        break;
+
+        case 4:
+          month = "April";
+
+        break;
+
+        case 5:
+          month = "May";
+
+        break;
+
+        case 6:
+          month = "June";
+
+        
+        break;
+
+        case 7:
+          month = "July";
+
+        
+        break;
+
+        case 8:
+          month = "August";
+
+        
+        break;
+
+        case 9:
+          month = "September";
+
+        
+        break;
+
+        case 10:
+          month = "October";
+
+        
+        break;
+
+        case 11:
+          month = "November";
+
+        
+        break;
+
+        case 12:
+          month = "December";
+
+        
+        break;
+    
+    
+      default:
+        break;
+    }
+
+    newDate.style ="text-align: center;";
+    newDate.innerHTML += `
+    <div class="card" style="text-align: center;">
+    <div class="card-body" >
+    <div style="text-align: left;">
+    <h1 class="card-title" style="text-align: center;">${doc.data().date} </h1>
+
+    </div>
+    </div>
+    </div>
+
+    
+    `;
+
+    const newButton= document.createElement("button");
+    newButton.className="btn btn-close btn-sm";
+    newButton.setAttribute("data-bs-dismiss","modal");
+ 
+
+    newButton.addEventListener("click", () => {
+      idDate= doc.id;
+      deleteDate(idDate);
+     });
+  
+     dates.append(newButton);
+     dates.append(newDate);
+
+      
+  });
+
+ 
+
+};
+
+
+
 const modal = document.getElementById("observation");
+const modalDate = document.getElementById("dates");
+
 
 function clean(){
   modal.innerHTML = ""
+  modalDate.innerHTML = ""
+
 }
 
 const close = document.getElementById("closeObservations");
@@ -324,6 +549,12 @@ clean();
 
 const closeUpdate = document.getElementById("closeUpdate");
 closeUpdate.addEventListener("click", () => {
+  console.log("click");
+clean();
+});
+
+const closeDate = document.getElementById("closeDate");
+closeDate.addEventListener("click", () => {
   console.log("click");
 clean();
 });
@@ -353,6 +584,15 @@ const createUserFire = async (user) => {
 const createObservationFire = async (observation) => {
   try {
     const docRef = await addDoc(collection(db, "observations"), observation);
+    return docRef.id;
+  } catch (error) {
+    return "no-created";
+  }
+};
+
+const createDateFire = async (date) => {
+  try {
+    const docRef = await addDoc(collection(db, "dates"), date);
     return docRef.id;
   } catch (error) {
     return "no-created";
@@ -451,7 +691,7 @@ const deleteUser = async () => {
   
 setTimeout(() => {location.reload() }, 2000);
 
-  modal.innerHTML = "";
+clean();
 
 
 }
@@ -486,8 +726,39 @@ const deleteObservation = async () => {
   } else {
     alert("Nota no eliminada");
   }
-  modal.innerHTML = "";
+clean();
+}
 
+
+
+const deleteDateFire = async (idDate) => {
+  try {
+    await deleteDoc(doc(db, "dates", idDate));
+    return  "deleted";
+  } catch (error) {
+    return "no-deleted";
+  }
+};
+
+const deleteDate= async () => {
+ 
+
+  const generatedId = await  deleteDateFire(idDate);
+  if (generatedId != "no-deleted") {
+    Toastify({
+      text: "Fecha eliminada exitosamente!",
+      duration: 2000,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "center", // `left`, `center` or `right`
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+    }).showToast();
+  } else {
+    alert("Fecha no eliminada");
+  }
+clean();
 }
 
 
