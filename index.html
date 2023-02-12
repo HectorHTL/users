@@ -106,8 +106,7 @@
                     <h5 class="modal-title" id="exampleModalLabel">Observations</h5>
                 </div>
                 <div class="modal-body" id="modalBody">
-               
-
+                    <div style="text-align: right;" data-bs-dismiss="modal" ><button class="btn btn-success" id="btnDate" data-bs-toggle='modal'   data-bs-target='#datesModal'  >Dates</button></div>
                     <label for="note" class="form-label"><b>Note</b> </label>
                     <textarea id="note" class="form-control"  rows="3"></textarea>
                     <br>
@@ -130,6 +129,34 @@
         </div>
     </div>
 
+
+    <div class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" id="datesModal" role="dialog">
+        <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Dates</h5>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <label for="note" class="form-label"><b>New date</b> </label>
+                        <input type="date" id="date" class="form-control"></input>
+                        <br>
+    
+                        <button type="button"  class="btn btn-primary" id="saveDate" data-bs-dismiss="modal" >Save</button>
+    
+                    </div>
+    
+                    <div id="dates"></div>
+    
+                    
+                    <div class="modal-footer" style="text-align: right;">
+                        
+                        <button type="button" class="btn btn-secondary" id="closeDate" data-bs-dismiss="modal">Close</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    
    
 
        
