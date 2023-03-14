@@ -12,7 +12,7 @@ const d = query(collection(db, "dates"), orderBy("date"));
 var users = document.getElementById("users");
 var observations = document.getElementById("observation");
 var dates = document.getElementById("dates");
-
+ 
 var idUser = "";
 var idObservation = "";
 var idDate = "";
@@ -90,13 +90,113 @@ const getAllUsersFire = async () => {
 
   });
 
+  const btnGet = document.getElementById("getUsers");
 
+  const btnSearchUser = document.getElementById("searchUser");
+  btnSearchUser.addEventListener("click", () => {
+    btnGet.style.display = "flex"; 
+    
+    getUser();
+    console.log("Entro SearchUser");
+ });
+
+ btnGet.addEventListener("click", () => {
+  btnGet.style.display = "none";
+  location.reload()
+  console.log("Entro GetAll");
+});
 
 };
+
+const getUser = async () => {
+
+  var user = document.getElementById("user").value;
+  users.innerHTML = "";
+  console.log("Entro");
+
+   
+
+
+ console.log("user "+user);
+ const queryUser = query(q, where("name", "==", user));
+  const querySnapshot = await getDocs(queryUser);
+  querySnapshot.forEach((doc) => {
+
+    console.log(doc.id, " => ", doc.data());
+    const newUser= document.createElement("div");
+    newUser.className = "col col-lg-4";
+    newUser.innerHTML += `
+
+    <br>
+    <br>
+    <div class="card" style="width: 18rem;" data-bs-toggle='modal' data-bs-target='#exampleModal'>
+    <img src="${doc.data().image}" class="card-img-top" alt="...">
+    <div class="card-body" >
+      <h5 class="card-title">${doc.data().name} ${doc.data().lastName}  </h5>
+      <h6 class="card-subtitle mb-2 text-muted">${doc.data().alias} </h6>
+      <div style="text-align:right;" data-bs-toggle='modal' data-bs-target='#observationsModal' >  
+
+    </div>
+    
+    </div>
+    </div>
+
+
+    
+    `;
+  newUser.addEventListener("click", () => {
+        console.log(doc.data().name);
+        idUser= doc.id;
+        document.getElementById("textModal").value = doc.data().name;
+        document.getElementById("lastName").value = doc.data().lastName;
+        document.getElementById("alias").value = doc.data().alias;
+        document.getElementById("position").value = doc.data().position;
+        document.getElementById("address").value = doc.data().address;
+        document.getElementById("city").value = doc.data().city;
+        document.getElementById("state").value = doc.data().state;
+        document.getElementById("phone").value = doc.data().phone;
+        document.getElementById("mail").value = doc.data().mail;
+        document.getElementById("imageUser").src = doc.data().image;
+
+
+
+        console.log(idUser);
+      });
+
+      
+
+  newUser.innerHTML += `
+
+  
+
+  <button data-bs-toggle='modal'   data-bs-target='#observationsModal' class="btn btn-success" >Observations</button>
+
+
+  
+  `;    
+
+
+  newUser.addEventListener("click", () => {
+       
+    getObservations(idUser);
+ });
+  
+      users.append(newUser);
+
+
+  });
+
+
+ 
+ };
+
+
+
 
 
 
 const saveObservation = async () => {
+  clean();
   const note = {
     observation: "",
     user: idUser,
@@ -532,6 +632,7 @@ const modalDate = document.getElementById("dates");
 function clean(){
   modal.innerHTML = ""
   modalDate.innerHTML = ""
+  dates.innerHTML = "";
 
 }
 
