@@ -101,13 +101,13 @@ uploadTask.on('state_changed',
   } else {
     alert("Usuario no creado");
   }
+      setTimeout(() => {location.reload() }, 3000);
 
     });
   }
 );
 
 
-setTimeout(() => {location.reload() }, 3000);
 
 
 };
