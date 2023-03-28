@@ -23,11 +23,68 @@ const saveUser = async () => {
 
 
  const file = document.querySelector("#image").files[0];
-  const name = file.name;
- const storageRef  = ref(storage, "images/"+name);
+   var imageValidation = false;
+ if (file == null){
+  console.log("ENTRA");
+  imageValidation = true
+  const user = {
+    name: "",
+    lastName : "",
+    position : "",
+    address : "",
+    city : "",
+    state : "",
+    phone : "",
+    mail : "",
+    image : "",
+    created_at: new Date(),
+  };
+
+  const txtName = document.getElementById("txtName");
+  const lastName = document.getElementById("lastNameNew");
+  const position = document.getElementById("positionNew");
+  const address = document.getElementById("addressNew");
+  const city = document.getElementById("cityNew");
+  const state = document.getElementById("stateNew");
+  const phone = document.getElementById("phoneNew");
+  const mail = document.getElementById("mailNew");
+  var  img="https://firebasestorage.googleapis.com/v0/b/gestionusuarios-6fc91.appspot.com/o/images%2Fperfil%20(1).png?alt=media&token=0c9bc669-7e6b-4acb-9f71-95f1b00ee5dc";
+  
+  user.name = txtName.value;
+  user.lastName = lastName.value,
+  user.position = position.value,
+  user.address = address.value,
+  user.city = city.value,
+  user.state = state.value,
+  user.phone = phone.value,
+  user.mail = mail.value,
+  user.image = img
 
   
-const uploadTask = uploadBytesResumable(storageRef, file);
+  const generatedId =  createUserFire(user);
+  if (generatedId != "no-created") {
+    txtName.value = "";
+    Toastify({
+      text: "Usuario creado exitosamente!",
+      duration: 2000,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "center", // `left`, `center` or `right`
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+    }).showToast();
+  } else {
+    alert("Usuario no creado");
+  }
+
+  setTimeout(() => {location.reload() }, 3000);
+
+ }else{
+
+  const name = file.name;
+ const storageRef  = ref(storage, "images/"+name);
+  const uploadTask = uploadBytesResumable(storageRef, file);
 
 
 uploadTask.on('state_changed',
@@ -101,12 +158,18 @@ uploadTask.on('state_changed',
   } else {
     alert("Usuario no creado");
   }
-      setTimeout(() => {location.reload() }, 3000);
+
+  setTimeout(() => {location.reload() }, 3000);
+
 
     });
   }
 );
 
+
+  
+ }
+  
 
 
 
